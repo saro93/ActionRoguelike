@@ -63,6 +63,12 @@ void ASCharacter::PrimaryAttack()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
+void ASCharacter::Jump()
+{
+	FVector Direction = FVector(0,0,650);
+	this->LaunchCharacter(Direction,false,false);
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -98,6 +104,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed,this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed,this, &ASCharacter::Jump);
 
 }
 

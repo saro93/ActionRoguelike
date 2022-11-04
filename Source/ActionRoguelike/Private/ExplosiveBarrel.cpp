@@ -3,6 +3,8 @@
 
 #include "ExplosiveBarrel.h"
 #include "Components/SphereComponent.h"
+#include "SMagicProjectile.h"
+#include "SCharacter.generated.h"
 
 
 // Sets default values
@@ -13,17 +15,17 @@ AExplosiveBarrel::AExplosiveBarrel()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(RootComponent);
-
-	RadialArea = CreateDefaultSubobject<URadialForceComponent>("RadialArea");
-	
-	RadialArea->Radius = 500;
-	RadialArea->ForceStrength = 1000;
-
+	Mesh->SetCollisionProfileName("PhysicsActor");
 	Mesh->SetSimulatePhysics(true);
-
 	Mesh->OnComponentHit.AddDynamic(this, &AExplosiveBarrel::OnHit);
 
-
+	RadialForce = CreateDefaultSubobject<URadialForceComponent>("RadialArea");
+	RadialForce->SetupAttachment(Mesh);
+	RadialForce->SetRelativeLocation(FVector(0,0,70));
+	RadialForce->Radius = 500;
+	RadialForce->ForceStrength = 2000;
+	RadialForce->bImpulseVelChange = true;
+	RadialForce->bAutoActivate = false;
 
 }
 
@@ -36,9 +38,11 @@ void AExplosiveBarrel::BeginPlay()
 
 void AExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-
-	RadialArea->FireImpulse();
-
+		UE_LOG(LogTemp, Warning, TEXT("Hello"));
+		Proiettile = Cast<ASMagicProjectile>(OtherActor);
+		if (Proiettile) {
+			RadialForce->FireImpulse();
+		}
 }
 
 // Called every frame

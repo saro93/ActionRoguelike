@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "SMagicProjectile.h"
 #include "ExplosiveBarrel.generated.h"
 
 class USphereComponent;
@@ -26,11 +27,15 @@ protected:
 		UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleAnywhere)
-		URadialForceComponent* RadialArea;
+		URadialForceComponent* RadialForce;
+
+	UPROPERTY()
+		ASMagicProjectile* Proiettile;
 
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
