@@ -23,7 +23,8 @@ AExplosiveBarrel::AExplosiveBarrel()
 	RadialForce->SetupAttachment(Mesh);
 	RadialForce->SetRelativeLocation(FVector(0,0,70));
 	RadialForce->Radius = 500;
-	RadialForce->ForceStrength = 2000;
+	RadialForce->ImpulseStrength = 1500;
+	RadialForce->ForceStrength = 1000;
 	RadialForce->bImpulseVelChange = true;
 	RadialForce->bAutoActivate = false;
 
