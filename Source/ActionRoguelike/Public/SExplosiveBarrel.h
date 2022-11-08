@@ -6,18 +6,18 @@
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "SMagicProjectile.h"
-#include "ExplosiveBarrel.generated.h"
+#include "SExplosiveBarrel.generated.h"
 
 class USphereComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API AExplosiveBarrel : public AActor
+class ACTIONROGUELIKE_API ASExplosiveBarrel : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AExplosiveBarrel();
+	ASExplosiveBarrel();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* Mesh;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		URadialForceComponent* RadialForce;
 
 	UPROPERTY()
