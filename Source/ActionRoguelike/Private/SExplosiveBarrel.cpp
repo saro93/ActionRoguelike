@@ -6,7 +6,7 @@
 #include "SMagicProjectile.h"
 #include "SCharacter.generated.h"
 
-
+// class FString;
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
@@ -40,11 +40,19 @@ void ASExplosiveBarrel::BeginPlay()
 
 void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-		UE_LOG(LogTemp, Warning, TEXT("Hello"));
+
 		Proiettile = Cast<ASMagicProjectile>(OtherActor);
 		if (Proiettile) {
 			RadialForce->FireImpulse();
 		}
+
+		// %s = string
+		// %f = float
+		// logs: "OtherActor": MyActor, at gametime: 124.4"
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s, at get time: %f"), *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
+
+		FString CombinedString = FString::Printf(TEXT("Hit at location:"), *Hit.ImpactPoint.ToString());
+		DrawDebugString(GetWorld(), Hit.ImpactPoint,CombinedString, nullptr, FColor::Green, 4.0f, true);
 }
 
 // Called every frame
