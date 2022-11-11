@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 #include "SMagicProjectile.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UGameplayStatics;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public AActor
@@ -30,8 +32,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UParticleSystemComponent* EffectComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* HitParticle;
+
+	UPROPERTY()
+		UGameplayStatics* HitEffect;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 public:	
 	// Called every frame
