@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class USInteractionComponent;
 class UAnimMontage;
+class USAttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -37,6 +38,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USInteractionComponent* InteractionComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+		float TraceDistance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		USAttributeComponent* AttributeComp;
+
 	FTimerHandle TimerHandle_PrimaryAttack;
 
 	// Called when the game starts or when spawned
@@ -52,6 +59,8 @@ protected:
 	void PrimaryInteract();
 
 	void Jump();
+
+	void TraceForward_Implementation();
 
 public:	
 	// Called every frame

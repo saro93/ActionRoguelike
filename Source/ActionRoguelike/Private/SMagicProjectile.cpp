@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SAttributeComponent.h"
 #include "particles/ParticleSystemComponent.h"
 
 // Sets default values
@@ -13,6 +14,7 @@ ASMagicProjectile::ASMagicProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&ASMagicProjectile::OnActorOverlap);
 	RootComponent = SphereComp;
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
@@ -38,6 +40,18 @@ void ASMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 {
 	HitEffect->SpawnEmitterAtLocation(GetWorld(),HitParticle, Hit.Location);
 	this->Destroy();
+}
+
+void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != GetInstigator()) {
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if (AttributeComp) {
+			AttributeComp->ApplyHealthChange(-20.f);
+
+			Destroy();
+		}
+	}
 }
 
 // Called every frame

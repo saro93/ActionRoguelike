@@ -6,6 +6,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
 // Sets default values
@@ -17,6 +19,8 @@ ASCharacter::ASCharacter()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SprinArmComp");
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->TargetArmLength = 250;
+	SpringArmComp->SocketOffset = FVector(0,90,50);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -26,6 +30,10 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	TraceDistance = 2000;
+
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 }
 
 // Called when the game starts or when spawned
@@ -65,15 +73,35 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector Loc;
+	FRotator Rot;
+	FHitResult OutHit;
+	GetController()->GetPlayerViewPoint(Loc,Rot);
+	FVector Start = Loc;
+	FVector End = Start + (Rot.Vector() * TraceDistance); 
 
 	FActorSpawnParameters SpawnParams;
+	FCollisionQueryParams QParams;
+
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+    bool bOutHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility, QParams);
+
+	FTransform SpawnTM;
+
+	if (bOutHit) {
+		SpawnTM = FTransform(UKismetMathLibrary::MakeRotFromX(OutHit.ImpactPoint - HandLocation), HandLocation);
+		DrawDebugLine(GetWorld(), HandLocation, OutHit.ImpactPoint, FColor::Green, true);
+	}
+	else {
+		SpawnTM = FTransform(UKismetMathLibrary::MakeRotFromX(End - HandLocation), HandLocation);
+		DrawDebugLine(GetWorld(), HandLocation, End, FColor::Black, true);
+	}
+
+	GetWorld()->SpawnActor<AActor>(ProjectileClass,SpawnTM, SpawnParams);
 }
 
 void ASCharacter::PrimaryInteract()
@@ -87,6 +115,10 @@ void ASCharacter::Jump()
 {
 	FVector Direction = FVector(0,0,650);
 	this->LaunchCharacter(Direction,false,false);
+}
+
+void ASCharacter::TraceForward_Implementation()
+{
 }
 
 // Called every frame
