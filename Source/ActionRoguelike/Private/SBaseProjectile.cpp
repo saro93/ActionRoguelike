@@ -2,64 +2,71 @@
 
 
 #include "SBaseProjectile.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
-// Sets default values
+
 ASBaseProjectile::ASBaseProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComp->SetCollisionProfileName("Projectile");
+	RootComponent = SphereComp;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
+	EffectComp->SetupAttachment(RootComponent);
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment( RootComponent);
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
 
+	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMoveComp");
+	MoveComp->bRotationFollowsVelocity = true;
+	MoveComp->bInitialVelocityInLocalSpace = true;
+	MoveComp->ProjectileGravityScale = 0.0f;
+	MoveComp->InitialSpeed = 8000;
 
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
-	MovementComp->ProjectileGravityScale = false;
+	ImpactShakeInnerRadius = 0.0f;
+	ImpactShakeOuterRadius = 1500.0f;
 
-	InternalSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InternalSphere"));
-	InternalSphere->SetSphereRadius(200);
-	InternalSphere->SetupAttachment(RootComponent);
-	InternalSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	InternalSphere->OnComponentBeginOverlap.AddDynamic(this, &ASBaseProjectile::OnActorOverlap);
-
-	RadialForce = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialComp"));
-	RadialForce->SetupAttachment(Mesh);
-
-	RadialForce->bIgnoreOwningActor = true;
-	RadialForce->bAutoActivate = false;
-	RadialForce->ImpulseStrength = -1000;
-	RadialForce->ForceStrength = -2000000;
-	RadialForce->Radius = 3000;
-	RadialForce->Falloff = RIF_Constant;
-
+	// Directly set bool instead of going through SetReplicates(true) within constructor,
+	// Only use SetReplicates() outside constructor
+	bReplicates = true;
 }
 
-// Called when the game starts or when spawned
-void ASBaseProjectile::BeginPlay()
+
+void ASBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::BeginPlay();
-	
+	Explode();
 }
 
-// Called every frame
-void ASBaseProjectile::Tick(float DeltaTime)
+
+// _Implementation from it being marked as BlueprintNativeEvent
+
+void ASBaseProjectile::Explode_Implementation()
 {
-	Super::Tick(DeltaTime);
+	// Check to make sure we aren't already being 'destroyed'
+	// Adding ensure to see if we encounter this situation at all
+	if (ensure(IsValid(this)))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 
+		UGameplayStatics::PlayWorldCameraShake(this, ImpactShake, GetActorLocation(), ImpactShakeInnerRadius, ImpactShakeOuterRadius);
+
+		Destroy();
+	}
 }
 
-void ASBaseProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASBaseProjectile::PostInitializeComponents()
 {
-	if (OtherComp->IsSimulatingPhysics()) { OtherActor->Destroy(); }
-	DrawDebugString(GetWorld(),OtherActor->GetActorLocation(),TEXT("Ciao"),OtherActor,FColor::Red);
+	Super::PostInitializeComponents();
+	//SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+
+	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
+	// PostInitializeComponent is the preferred way of binding any events.
+	SphereComp->OnComponentHit.AddDynamic(this, &ASBaseProjectile::OnActorHit);
 }
-
-
-
