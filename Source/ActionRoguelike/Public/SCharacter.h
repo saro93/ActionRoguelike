@@ -27,6 +27,9 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+		TSubclassOf<AActor> SpecialProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
 	UPROPERTY(VisibleAnywhere)
@@ -45,6 +48,7 @@ protected:
 		USAttributeComponent* AttributeComp;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_BlackHoleAttack;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,6 +59,9 @@ protected:
 
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
+
+	void BlackHoleAttack();
+	void BlackHoleAttack_TimeElapsed();
 
 	void PrimaryInteract();
 

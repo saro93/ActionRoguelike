@@ -104,6 +104,47 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass,SpawnTM, SpawnParams);
 }
 
+void ASCharacter::BlackHoleAttack()
+{
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::BlackHoleAttack_TimeElapsed()
+{
+
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector Loc;
+	FRotator Rot;
+	FHitResult OutHit;
+	GetController()->GetPlayerViewPoint(Loc, Rot);
+	FVector Start = Loc;
+	FVector End = Start + (Rot.Vector() * TraceDistance);
+
+	FActorSpawnParameters SpawnParams;
+	FCollisionQueryParams QParams;
+
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	bool bOutHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility, QParams);
+
+	FTransform SpawnTM;
+
+	if (bOutHit) {
+		SpawnTM = FTransform(UKismetMathLibrary::MakeRotFromX(OutHit.ImpactPoint - HandLocation), HandLocation);
+		DrawDebugLine(GetWorld(), HandLocation, OutHit.ImpactPoint, FColor::Green, true);
+	}
+	else {
+		SpawnTM = FTransform(UKismetMathLibrary::MakeRotFromX(End - HandLocation), HandLocation);
+		DrawDebugLine(GetWorld(), HandLocation, End, FColor::Black, true);
+	}
+
+	GetWorld()->SpawnActor<AActor>(SpecialProjectileClass, SpawnTM, SpawnParams);
+
+}
+
 void ASCharacter::PrimaryInteract()
 {
 	if (InteractionComp) {
@@ -156,6 +197,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed,this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed,this, &ASCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 }

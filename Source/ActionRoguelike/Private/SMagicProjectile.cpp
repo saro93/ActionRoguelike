@@ -25,6 +25,8 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 
+	
+
 	SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
 }
 
