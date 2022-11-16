@@ -6,34 +6,26 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/AudioComponent.h"
-#include "Sound/SoundCue.h"
 
 
 ASBaseProjectile::ASBaseProjectile()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentHit.AddDynamic(this,&ASBaseProjectile::OnActorHit);
 	RootComponent = SphereComp;
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectComp->SetupAttachment(RootComponent);
-
-	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
-	AudioComp->SetupAttachment(RootComponent);
 
 	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMoveComp");
 	MoveComp->bRotationFollowsVelocity = true;
 	MoveComp->bInitialVelocityInLocalSpace = true;
 	MoveComp->ProjectileGravityScale = 0.0f;
 	MoveComp->InitialSpeed = 8000;
-
-	ImpactShakeInnerRadius = 0.0f;
-	ImpactShakeOuterRadius = 1500.0f;
-
 	// Directly set bool instead of going through SetReplicates(true) within constructor,
 	// Only use SetReplicates() outside constructor
-	bReplicates = true;
+	//bReplicates = true;
 }
 
 
@@ -47,6 +39,7 @@ void ASBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Oth
 
 void ASBaseProjectile::Explode_Implementation()
 {
+	/*
 	// Check to make sure we aren't already being 'destroyed'
 	// Adding ensure to see if we encounter this situation at all
 	if (ensure(IsValid(this)))
@@ -58,7 +51,15 @@ void ASBaseProjectile::Explode_Implementation()
 		UGameplayStatics::PlayWorldCameraShake(this, ImpactShake, GetActorLocation(), ImpactShakeInnerRadius, ImpactShakeOuterRadius);
 
 		Destroy();
+	}*/
+
+	if (ensure(!IsPendingKill())) 
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+
+	    Destroy();
 	}
+
 }
 
 void ASBaseProjectile::PostInitializeComponents()
@@ -68,5 +69,5 @@ void ASBaseProjectile::PostInitializeComponents()
 
 	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
 	// PostInitializeComponent is the preferred way of binding any events.
-	SphereComp->OnComponentHit.AddDynamic(this, &ASBaseProjectile::OnActorHit);
+	//SphereComp->OnComponentHit.AddDynamic(this, &ASBaseProjectile::OnActorHit);
 }
