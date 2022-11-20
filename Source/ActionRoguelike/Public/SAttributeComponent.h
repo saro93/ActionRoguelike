@@ -28,6 +28,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
+	UFUNCTION(BlueprintCallable)
+		bool IsAlive() const;
+
 	UFUNCTION(BlueprintCallable, Category="Attribute")
 	bool ApplyHealthChange(float Delta);
 };

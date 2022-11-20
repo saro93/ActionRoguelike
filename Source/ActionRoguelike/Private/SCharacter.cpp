@@ -38,6 +38,15 @@ ASCharacter::ASCharacter()
 	
 }
 
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -159,6 +168,18 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 
 	}
 }
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta)
+{
+
+	if (NewHealth <= 0.0f && Delta < 0.0f) {
+		APlayerController* PC =  Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
+
+}
+
+
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
