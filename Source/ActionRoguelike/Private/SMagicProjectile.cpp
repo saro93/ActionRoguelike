@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SAttributeComponent.h"
+#include "Components/AudioComponent.h"
 #include "particles/ParticleSystemComponent.h"
 
 // Sets default values
@@ -25,7 +26,8 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 
-	
+	flightSound = CreateDefaultSubobject<UAudioComponent>("SoundFlightProjectile");
+	flightSound->SetupAttachment(SphereComp);
 
 	SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
 }
@@ -41,6 +43,7 @@ void ASMagicProjectile::BeginPlay()
 void ASMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	HitEffect->SpawnEmitterAtLocation(GetWorld(),HitParticle, Hit.Location);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
 	this->Destroy();
 }
 
@@ -49,9 +52,9 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (OtherActor && OtherActor != GetInstigator()) {
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp) {
-			AttributeComp->ApplyHealthChange(-20.f);
-
+			AttributeComp->ApplyHealthChange(-30.f);
 			Destroy();
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
 		}
 	}
 }

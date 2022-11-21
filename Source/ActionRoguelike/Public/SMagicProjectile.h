@@ -11,6 +11,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 class UGameplayStatics;
+class UAudioComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public AActor
@@ -35,8 +36,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* HitParticle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAudioComponent* flightSound;
+
 	UPROPERTY()
 		UGameplayStatics* HitEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USoundBase* HitSound;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
