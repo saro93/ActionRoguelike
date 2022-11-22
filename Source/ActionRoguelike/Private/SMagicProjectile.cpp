@@ -30,6 +30,8 @@ ASMagicProjectile::ASMagicProjectile()
 	flightSound->SetupAttachment(SphereComp);
 
 	SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
+
+	ProjectileDamage = -30;
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +54,8 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (OtherActor && OtherActor != GetInstigator()) {
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp) {
-			AttributeComp->ApplyHealthChange(-30.f);
+			if(AttributeComp)
+			AttributeComp->ApplyHealthChange(ProjectileDamage);
 			Destroy();
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
 		}

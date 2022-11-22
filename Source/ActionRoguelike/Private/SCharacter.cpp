@@ -165,7 +165,7 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 
 		FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
 		GetWorld()->SpawnActor<AActor>(ClassToSpawn,SpawnTM, SpawnParams);
-
+		SpawnEffect->SpawnEmitterAtLocation(GetWorld(),ParticleSpawn,HandLocation);
 	}
 }
 
@@ -188,9 +188,9 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	// -- Rotation Visualization debug -- //
-	const float DrawScale = 100.0f;
+	/*const float DrawScale = 100.0f;
 	const float Thickness = 5.0f;
 
 	FVector LineStart = GetActorLocation();
@@ -204,7 +204,8 @@ void ASCharacter::Tick(float DeltaTime)
 	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
 	// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
 	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
-	// -- end of Debug Arrow code -- //
+	// -- end of Debug Arrow code -- //*/
+
 }
 
 // Called to bind functionality to input

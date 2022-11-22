@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USoundBase* HitSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ProjectileDamage;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

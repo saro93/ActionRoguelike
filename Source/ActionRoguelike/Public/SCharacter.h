@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "SCharacter.generated.h"
 
 class UCameraComponent;
@@ -44,6 +45,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USInteractionComponent* InteractionComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* ParticleSpawn;
+
+	UPROPERTY()
+		UGameplayStatics* SpawnEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
 		float AttackAnimDelay;
