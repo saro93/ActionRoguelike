@@ -25,7 +25,7 @@ protected:
 	FTimerHandle TimerHandle_RespawnTimer;
 
 	UFUNCTION()
-		void ShowPowerup();
+	void ShowPowerup();
 
 	void HideAndCooldownPowerup();
 
