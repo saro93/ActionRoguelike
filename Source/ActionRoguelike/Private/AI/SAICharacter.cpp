@@ -6,13 +6,19 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
+#include "SAttributeComponent.h"
+#include "BrainComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
 {
     PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 
+    AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+    TimeToHit = "TimeToHit";
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -20,23 +26,54 @@ void ASAICharacter::PostInitializeComponents()
     Super::PostInitializeComponents();
 
     PawnSensingComponent->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
+    AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
+
 }
 
-void ASAICharacter::OnPawnSeen(APawn* Pawn)
+void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta)
 {
+    if (Delta < 0.0f) 
+    {
+       
+        if (InstigatorActor != this)
+        {
+            SetTargetActor(InstigatorActor);
+        }
 
-    AAIController* AIC = Cast<AAIController>(GetController());
-    if (AIC) {
-       UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+        GetMesh()->SetScalarParameterValueOnMaterials(TimeToHit, GetWorld()->TimeSeconds);
 
-       BBComp->SetValueAsObject("TargetActor",Pawn);
+        if (NewHealth <= 0.0f) 
+        {
+            AAIController* AIC = Cast<AAIController>(GetController());
+            if (AIC)
+            {
+                AIC->GetBrainComponent()->StopLogic("Killed");
+            }
 
-       DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+            GetMesh()->SetAllBodiesSimulatePhysics(true);
+            GetMesh()->SetCollisionProfileName("Ragdoll");
+
+            SetLifeSpan(10.0f);
+        }
     }
 
 }
 
 
+void ASAICharacter::SetTargetActor(AActor* NewTarget)
+{
+    AAIController* AIC = Cast<AAIController>(GetController());
+    if (AIC) {
+        AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
+    }
+}
 
+
+void ASAICharacter::OnPawnSeen(APawn* Pawn)
+{
+    SetTargetActor(Pawn);
+        DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+
+}
 
 

@@ -29,24 +29,8 @@ ASMagicProjectile::ASMagicProjectile()
 	flightSound = CreateDefaultSubobject<UAudioComponent>("SoundFlightProjectile");
 	flightSound->SetupAttachment(SphereComp);
 
-	SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
-
+	//SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
 	ProjectileDamage = -30;
-}
-
-// Called when the game starts or when spawned
-void ASMagicProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-
-}
-
-void ASMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	HitEffect->SpawnEmitterAtLocation(GetWorld(),HitParticle, Hit.Location);
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
-	this->Destroy();
 }
 
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -55,17 +39,10 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp) {
 			if(AttributeComp)
-			AttributeComp->ApplyHealthChange(ProjectileDamage);
+			AttributeComp->ApplyHealthChange(GetInstigator(),ProjectileDamage);
 			Destroy();
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
 		}
 	}
-}
-
-// Called every frame
-void ASMagicProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

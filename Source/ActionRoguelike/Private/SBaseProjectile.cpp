@@ -6,17 +6,22 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 
 ASBaseProjectile::ASBaseProjectile()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
-	SphereComp->OnComponentHit.AddDynamic(this,&ASBaseProjectile::OnActorHit);
+
 	RootComponent = SphereComp;
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectComp->SetupAttachment(RootComponent);
+
+	AudioComp = CreateDefaultSubobject <UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
+
 
 	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMoveComp");
 	MoveComp->bRotationFollowsVelocity = true;
@@ -53,7 +58,7 @@ void ASBaseProjectile::Explode_Implementation()
 		Destroy();
 	}*/
 
-	if (ensure(!IsPendingKill())) 
+	if (ensure(!IsValid(this))) 
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 
@@ -66,7 +71,7 @@ void ASBaseProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	//SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-
+	SphereComp->OnComponentHit.AddDynamic(this, &ASBaseProjectile::OnActorHit);
 	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
 	// PostInitializeComponent is the preferred way of binding any events.
 	//SphereComp->OnComponentHit.AddDynamic(this, &ASBaseProjectile::OnActorHit);

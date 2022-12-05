@@ -15,7 +15,7 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(RootComponent);
-	Mesh->SetCollisionProfileName("PhysicsActor");
+	Mesh->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
 	Mesh->SetSimulatePhysics(true);
 	Mesh->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnHit);
 
