@@ -28,6 +28,11 @@ bool USAttributeComponent::IsFullHealth() const
 	return Health == Max_Health;
 }
 
+bool USAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -GetHealthMax());
+}
+
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	float OldHealth = Health;

@@ -51,4 +51,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 		bool IsFullHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
 };
