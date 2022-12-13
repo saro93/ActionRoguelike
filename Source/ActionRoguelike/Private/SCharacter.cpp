@@ -226,6 +226,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("DashAction", IE_Pressed, this, &ASCharacter::Dash);
 }
 
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
+}
+
 void ASCharacter::HealSelf(float Amount)
 {
 	AttributeComp->ApplyHealthChange(this,Amount);

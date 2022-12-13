@@ -58,7 +58,7 @@ void ASBaseProjectile::Explode_Implementation()
 		Destroy();
 	}*/
 
-	if (ensure(!IsValid(this))) 
+	if (ensure(IsValid(this))) 
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 

@@ -27,6 +27,11 @@ public:
 	UFUNCTION(Exec)
 		void KillAll();
 
+	UFUNCTION()
+		void RespawnPlayerElapsed(AController* Controller);
+
+	virtual void OnActorkilled(AActor* VictimActor, AActor* Killer);
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
