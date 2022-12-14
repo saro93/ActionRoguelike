@@ -11,6 +11,8 @@ USAttributeComponent::USAttributeComponent()
 {
 	Max_Health = 100;
 	Health = Max_Health;
+
+	SetIsReplicatedByDefault(true);
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -50,8 +52,8 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	}
 
 	float OldHealth = Health;
-
-	Health = FMath::Clamp(Health + Delta, 0, Max_Health);
+	Health = FMath::Clamp(Health + Delta, 0.0f, Max_Health);
+	//NewHealth = FMath::Clamp(Health + Delta, 0, Max_Health);
 
 	float ActualDelta = Health - OldHealth;
 
@@ -73,6 +75,7 @@ USAttributeComponent* USAttributeComponent::GetAttribute(AActor* FromActor)
 {
 	if (FromActor)
 	{
+		//return FromActor->FindComponentByClass<USAttributeComponent>();
 		return Cast<USAttributeComponent>(FromActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 	}
 

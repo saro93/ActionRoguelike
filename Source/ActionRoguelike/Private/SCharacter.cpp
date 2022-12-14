@@ -35,7 +35,7 @@ ASCharacter::ASCharacter()
 
 	AttackAnimDelay = 0.2f;
 
-	
+	//AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 

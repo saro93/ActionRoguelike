@@ -6,8 +6,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SGameplayFunctionLibrary.generated.h"
 
-
-struct FHitResult;
 /**
  * 
  */

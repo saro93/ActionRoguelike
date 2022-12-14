@@ -14,17 +14,22 @@ bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* Target
 	return false;
 }
 
-bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount, const FHitResult& Hitresult)
+bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount, const FHitResult& HitResult)
 {
 	if (ApplyDamage(DamageCauser, TargetActor, DamageAmount))
 	{
-		UPrimitiveComponent* HitComp = Hitresult.GetComponent();
+		UPrimitiveComponent* HitComp = HitResult.GetComponent();
+		if (HitComp && HitComp->IsSimulatingPhysics(HitResult.BoneName))
+		{
+			// Direction = Target - Origin
+			FVector Direction = HitResult.TraceEnd - HitResult.TraceStart;
+			Direction.Normalize();
 
-		if (HitComp && HitComp->IsSimulatingPhysics(Hitresult.BoneName)) {
-			HitComp->AddImpulseAtLocation(-Hitresult.ImpactNormal * 300000.f, Hitresult.ImpactPoint, Hitresult.BoneName);
+			HitComp->AddImpulseAtLocation(Direction * 300000.f, HitResult.ImpactPoint, HitResult.BoneName);
 		}
 		return true;
 	}
+
 
 	return false;
 }

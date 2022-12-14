@@ -18,24 +18,27 @@ ASMagicProjectile::ASMagicProjectile()
 	InitialLifeSpan = 10.0f;
 
 	//SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
-	ProjectileDamage = -30;
+	ProjectileDamage = 30;
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
 }
 
 void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
+	//SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
 }
 
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped"));
-	if (OtherActor && OtherActor != GetInstigator()) {
+	SetInstigator(OverlappedComponent->GetOwner()->GetInstigator());
 
+	if (OtherActor && OtherActor != GetInstigator()) {
+		UE_LOG(LogTemp, Warning, TEXT("Overlapped"));
+		
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp){
 
-			AttributeComp->ApplyHealthChange(GetInstigator(), ProjectileDamage);
+			AttributeComp->ApplyHealthChange(GetInstigator(), -ProjectileDamage);
 			Destroy();
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
 		}
@@ -43,9 +46,7 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, ProjectileDamage, SweepResult))
 		{
-			
-
-			//Explode();
+			Explode();
 		}
 	}
 
