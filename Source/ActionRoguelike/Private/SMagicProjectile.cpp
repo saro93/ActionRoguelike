@@ -36,12 +36,12 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		UE_LOG(LogTemp, Warning, TEXT("Overlapped"));
 		
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if (AttributeComp){
+		/*if (AttributeComp) {
 
 			AttributeComp->ApplyHealthChange(GetInstigator(), -ProjectileDamage);
 			Destroy();
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, this->GetActorLocation());
-		}
+		}*/
 			
 
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, ProjectileDamage, SweepResult))
