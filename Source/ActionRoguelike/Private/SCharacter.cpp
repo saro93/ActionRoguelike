@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
+#include "SActionComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -28,12 +29,11 @@ ASCharacter::ASCharacter()
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
-
-	AttackAnimDelay = 0.2f;
 
 	//AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
@@ -73,42 +73,32 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void ASCharacter::PrimaryAttack()
+void ASCharacter::SprintStart()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
-	
+	ActionComp->StartActionByName(this, "Sprint");
 }
 
-void ASCharacter::PrimaryAttack_TimeElapsed()
+void ASCharacter::SprintStop()
 {
-	SpawnProjectile(ProjectileClass);
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
+void ASCharacter::PrimaryAttack()
+{
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::BlackHoleAttack()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
+	ActionComp->StartActionByName(this, "BlackHoleAttack");
 }
 
-void ASCharacter::BlackHoleAttack_TimeElapsed()
-{
-	SpawnProjectile(SpecialProjectileClass);
-}
 
 void ASCharacter::Dash()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::Dash_TimeElapsed, AttackAnimDelay);
+	ActionComp->StartActionByName(this, "Dash");
 }
 
-void ASCharacter::Dash_TimeElapsed()
-{
-	SpawnProjectile(DashProjectileClass);
-}
 
 void ASCharacter::PrimaryInteract()
 {
@@ -125,48 +115,6 @@ void ASCharacter::Jump()
 
 void ASCharacter::TraceForward_Implementation()
 {
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
-{
-	if (ensureAlways(ClassToSpawn)) {
-
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		FCollisionShape Shape;
-		Shape.SetSphere(20.0f);
-
-		//Ignore Player
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-
-		FCollisionObjectQueryParams ObjParams;
-		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceStart = CameraComp->GetComponentLocation();
-
-		//endpoint far in to the look at distance (not too far, still adjust somewhat towards crossair on a miss)
-		FVector TraceEnd = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
-
-		FHitResult Hit;
-		//returns true if we got to a blocking hit
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params)) {
-			//overwrite trace end with impact oint in the world
-			TraceEnd = Hit.ImpactPoint;
-		}
-
-		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
-
-		FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn,SpawnTM, SpawnParams);
-		SpawnEffect->SpawnEmitterAtLocation(GetWorld(),ParticleSpawn,HandLocation);
-	}
 }
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta)
@@ -224,6 +172,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jump", IE_Pressed,this, &ASCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 	PlayerInputComponent->BindAction("DashAction", IE_Pressed, this, &ASCharacter::Dash);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

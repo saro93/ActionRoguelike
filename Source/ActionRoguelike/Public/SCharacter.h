@@ -12,6 +12,7 @@ class USpringArmComponent;
 class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -24,18 +25,6 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> SpecialProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> DashProjectileClass;
-
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
@@ -46,21 +35,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USInteractionComponent* InteractionComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystem* ParticleSpawn;
-
-	UPROPERTY()
-		UGameplayStatics* SpawnEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
-		float AttackAnimDelay;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		USAttributeComponent* AttributeComp;
 
-	FTimerHandle TimerHandle_PrimaryAttack;
-	FTimerHandle TimerHandle_BlackHoleAttack;
-	FTimerHandle TimerHandle_Dash;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		USActionComponent* ActionComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,22 +48,20 @@ protected:
 
 	void MoveRight(float Value);
 
+	void SprintStart();
+	void SprintStop();
+
 	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
 
 	void BlackHoleAttack();
-	void BlackHoleAttack_TimeElapsed();
 
 	void Dash();
-	void Dash_TimeElapsed();
 
 	void PrimaryInteract();
 
 	void Jump();
 
 	void TraceForward_Implementation();
-
-	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
 
 	UFUNCTION()
 		void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta);
