@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "SAction.generated.h"
 
 
@@ -15,6 +16,18 @@ UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API USAction : public UObject
 {
 	GENERATED_BODY()
+
+protected:
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		USActionComponent* GetOwningComponent() const;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+		FGameplayTagContainer GrantsTags;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+		FGameplayTagContainer BlockedTags;
 
 public:
 
