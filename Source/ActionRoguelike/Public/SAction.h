@@ -29,7 +29,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 		FGameplayTagContainer BlockedTags;
 
+
+	bool bIsRunning;
+
 public:
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		bool IsRunning() const;
+
+	    UFUNCTION(BlueprintNativeEvent, Category = "Action")
+		bool CanStart(AActor* Instigator);
 
 		UPROPERTY(EditDefaultsOnly, Category = "Action")
 		FName ActionName;
@@ -37,8 +46,10 @@ public:
 		UFUNCTION(BlueprintNativeEvent, Category = "Action")
 			void StartAction(AActor* Instigator);
 
-		UFUNCTION(BlueprintNativeEvent, Category = "Action")
+		UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Action")
 			void StopAction(AActor* Instigator);
 
 		UWorld* GetWorld() const override;
+
+
 };

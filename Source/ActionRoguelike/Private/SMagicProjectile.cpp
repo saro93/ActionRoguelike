@@ -8,6 +8,8 @@
 #include "Components/AudioComponent.h"
 #include "particles/ParticleSystemComponent.h"
 #include "SGameplayFunctionLibrary.h"
+#include "SActionComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "SBaseProjectile.h"
 
 // Sets default values
@@ -33,8 +35,18 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 	SetInstigator(OverlappedComponent->GetOwner()->GetInstigator());
 
 	if (OtherActor && OtherActor != GetInstigator()) {
+
+		//static FGameplayTag  Tag = FGameplayTag::RequestGameplayTag("Status.Parrying");
+
+		USActionComponent* ActionComp = Cast<USActionComponent>(OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag)) 
+		{
+			MoveComp->Velocity = -MoveComp->Velocity;
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
+
 		UE_LOG(LogTemp, Warning, TEXT("Overlapped"));
-		
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		/*if (AttributeComp) {
 
