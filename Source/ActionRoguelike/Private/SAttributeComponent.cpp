@@ -46,7 +46,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 {
 	if (Delta < 0.0f)
 	{
-		float DamageMultiplier = CVarDamageMultiplier.GetValueOnAnyThread();
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 
 		Delta *= DamageMultiplier;
 	}
@@ -90,6 +90,11 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 
 	return false;
+}
+
+void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
 }
 
 
