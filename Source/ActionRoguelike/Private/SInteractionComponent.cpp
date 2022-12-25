@@ -130,15 +130,16 @@ void USInteractionComponent::FindBestInteractable()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	//ServerInteract(FocusedActor);
+    ServerInteract(FocusedActor);
+	
 
-	if (FocusedActor == nullptr) {
+	/*if (FocusedActor == nullptr) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to Interact");
 	}
 
 	APawn* MyPawn = Cast<APawn>(GetOwner());
 
-	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);*/
 }
 
 
@@ -146,12 +147,13 @@ void USInteractionComponent::PrimaryInteract()
 
 void USInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
 {
-	/*/if (InFocus == nullptr) {
+	if (InFocus == nullptr) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to Interact");
+		return;
 	}
 
 	APawn* MyPawn = Cast<APawn>(GetOwner());
 
-	ISGameplayInterface::Execute_Interact(InFocus, MyPawn);*/
+	ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 
 }
