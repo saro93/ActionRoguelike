@@ -28,9 +28,8 @@ ASBaseProjectile::ASBaseProjectile()
 	MoveComp->bInitialVelocityInLocalSpace = true;
 	MoveComp->ProjectileGravityScale = 0.0f;
 	MoveComp->InitialSpeed = 8000;
-	// Directly set bool instead of going through SetReplicates(true) within constructor,
-	// Only use SetReplicates() outside constructor
-	bReplicates = true;
+	
+	//SetReplicates(true);
 }
 
 

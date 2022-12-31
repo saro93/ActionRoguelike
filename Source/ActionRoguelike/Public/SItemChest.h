@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 #include "SGameplayInterface.h"
 #include "SItemChest.generated.h"
 
@@ -22,8 +23,14 @@ public:
 	void Interact_Implementation(APawn* InstigatorPawn);
 
 
-
 protected:
+
+
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+		bool bLidOpen;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BaseMesh;

@@ -2,6 +2,7 @@
 
 
 #include "SAttributeComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "SGameModeBase.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f, TEXT("Global Damage modifier for attribute component."), ECVF_Cheat);
@@ -57,7 +58,13 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 
 	float ActualDelta = Health - OldHealth;
 
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	if(ActualDelta == 0.0f) 
+	{
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+
+	}
 
 	if (ActualDelta < 0.0f && Health == 0.0f) 
 	{
@@ -95,6 +102,17 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAttributeComponent, Health);
+	DOREPLIFETIME(USAttributeComponent, Max_Health);
+
+
+	//DOREPLIFETIME_CONDITION(USAttributeComponent, Max_Health,COND_OwnerOnly);
 }
 
 
