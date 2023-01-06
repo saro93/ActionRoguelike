@@ -35,6 +35,9 @@ public:
 
 protected:
 
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 

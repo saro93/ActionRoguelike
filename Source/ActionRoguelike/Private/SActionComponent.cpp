@@ -9,9 +9,9 @@ USActionComponent::USActionComponent()
 
 	PrimaryComponentTick.bCanEverTick = true;
 
+	SetIsReplicated(true);
+
 }
-
-
 
 void USActionComponent::BeginPlay()
 {
@@ -71,6 +71,14 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				continue;
 			}
 
+			// isClient?
+			if (GetOwner()->HasAuthority()) 
+			{
+
+				ServerStartAction(Instigator, ActionName);
+
+			}
+
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -101,4 +109,10 @@ void USActionComponent::RemoveAction(USAction* ActionToRemove)
 		return;
 	}
 	Actions.Remove(ActionToRemove);
+}
+
+
+void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
 }
