@@ -33,6 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Actions")
 	    void RemoveAction(USAction* ActionToRemove);
 
+	/* Returns first occurrence of action matching the class provided */
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		USAction* GetAction(TSubclassOf<USAction> ActionClass) const;
+
 protected:
 
 	UFUNCTION(Server, Reliable)

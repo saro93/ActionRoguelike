@@ -28,7 +28,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget>HealthBarWidgetClass;
 
+	/* Widget to display when bot first sees a player. */
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+		TSubclassOf<UUserWidget> SpottedWidgetClass;
+
 	void SetTargetActor(AActor* NewTarget);
+
+	UFUNCTION(BlueprintCallable, Category = "AI")
+		AActor* GetTargetActor() const;
 
 	virtual void PostInitializeComponents() override;
 
@@ -52,4 +59,7 @@ protected:
 
 public:	
 	
+	/* Key for AI Blackboard 'TargetActor' */
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+		FName TargetActorKey;
 };
