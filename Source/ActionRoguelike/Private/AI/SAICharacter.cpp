@@ -95,7 +95,7 @@ AActor* ASAICharacter::GetTargetActor() const
     AAIController* AIC = Cast<AAIController>(GetController());
     if (AIC)
     {
-        return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
+        return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
     }
 
     return nullptr;

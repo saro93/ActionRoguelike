@@ -55,10 +55,10 @@ public:
 	FOnAttributeChanged OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-		FOnAttributeChanged OnRageChanged;
+	FOnAttributeChanged OnRageChanged;
 
 	UFUNCTION(BlueprintCallable)
-		bool IsAlive() const;
+	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category="Attribute")
 	bool ApplyHealthChange(AActor* InstigatorActor,float Delta);

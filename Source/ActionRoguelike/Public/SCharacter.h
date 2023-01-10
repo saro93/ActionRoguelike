@@ -25,6 +25,9 @@ public:
 
 protected:
 
+	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+		FName TimeToHitParamName;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
