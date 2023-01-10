@@ -14,6 +14,7 @@ ASPowerup_HealthPotion::ASPowerup_HealthPotion()
 	MeshComp->SetupAttachment(RootComponent);
 
 	CreditCost = 50;
+	bReplicates = true;
 }
 
 

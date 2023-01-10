@@ -6,6 +6,12 @@
 #include "SAction.h"
 
 
+ASPowerup_Action::ASPowerup_Action()
+{
+	bReplicates = true;
+}
+
+
 void ASPowerup_Action::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// Make sure we have instigator & that action class was set up
@@ -31,3 +37,4 @@ void ASPowerup_Action::Interact_Implementation(APawn* InstigatorPawn)
 		HideAndCooldownPowerup();
 	}
 }
+

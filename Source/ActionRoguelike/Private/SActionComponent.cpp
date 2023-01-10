@@ -9,7 +9,7 @@ USActionComponent::USActionComponent()
 
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 
 }
 
@@ -72,7 +72,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 			}
 
 			// isClient?
-			if (GetOwner()->HasAuthority()) 
+			if (!GetOwner()->HasAuthority()) 
 			{
 
 				ServerStartAction(Instigator, ActionName);
@@ -88,17 +88,24 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 
 bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
-	for (USAction* Action : Actions) {
+	for (USAction* Action : Actions)
+	{
 		if (Action && Action->ActionName == ActionName)
 		{
-			if (Action->IsRunning()) 
+			if (Action->IsRunning())
 			{
+				// Is Client?
+				if (!GetOwner()->HasAuthority())
+				{
+					ServerStopAction(Instigator, ActionName);
+				}
+
 				Action->StopAction(Instigator);
 				return true;
 			}
-			
 		}
 	}
+
 	return false;
 }
 
@@ -115,6 +122,11 @@ void USActionComponent::RemoveAction(USAction* ActionToRemove)
 void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);
+}
+
+void USActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
 }
 
 USAction* USActionComponent::GetAction(TSubclassOf<USAction> ActionClass) const

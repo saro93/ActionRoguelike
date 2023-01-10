@@ -20,6 +20,7 @@ public:
 	void StopAction_Implementation(AActor* Instigator) override;
 
 
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")

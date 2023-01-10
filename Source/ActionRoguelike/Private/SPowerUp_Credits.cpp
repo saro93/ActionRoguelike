@@ -10,6 +10,7 @@
 ASPowerUp_Credits::ASPowerUp_Credits()
 {
 	CreditsAmount = 80;
+	bReplicates = true;
 }
 
 
