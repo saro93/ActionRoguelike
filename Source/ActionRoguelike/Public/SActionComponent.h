@@ -55,13 +55,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 		TArray<TSubclassOf<USAction>> DefaultActions;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 		TArray<USAction*> Actions;
 
 public:	
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	UPROPERTY(BlueprintAssignable)
 		FOnActionStateChanged OnActionStarted;
