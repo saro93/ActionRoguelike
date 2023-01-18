@@ -104,8 +104,9 @@ AActor* ASAICharacter::GetTargetActor() const
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-    SetTargetActor(Pawn);
+   
     if (GetTargetActor() != Pawn) {
+        SetTargetActor(Pawn);
 
         DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
 

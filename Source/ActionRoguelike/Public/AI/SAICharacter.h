@@ -57,9 +57,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 	FName TimeToHit;
 
-public:	
-	
 	/* Key for AI Blackboard 'TargetActor' */
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 		FName TargetActorKey;
+
+public:	
+	
+	
 };
