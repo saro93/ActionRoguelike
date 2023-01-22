@@ -73,6 +73,11 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	{
 		return false;
 	}
+
+	/*if (!GetOwner()->HasAuthority()) {
+		return false;
+	}*/
+
 	if (Delta < 0.0f)
 	{
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
@@ -81,7 +86,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	}
 
 	float OldHealth = Health;
-	//Health = FMath::Clamp(Health + Delta, 0.0f, Max_Health);
+	
 	float NewHealth = FMath::Clamp(Health + Delta, 0, Max_Health);
 
 	float ActualDelta = NewHealth - OldHealth;
