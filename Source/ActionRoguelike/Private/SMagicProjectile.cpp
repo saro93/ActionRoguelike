@@ -33,7 +33,7 @@ void ASMagicProjectile::PostInitializeComponents()
 
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	SetInstigator(OverlappedComponent->GetOwner()->GetInstigator());
+	//SetInstigator(OverlappedComponent->GetOwner()->GetInstigator());
 
 	if (OtherActor && OtherActor != GetInstigator()) {
 
@@ -61,8 +61,9 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			Explode();
 
-			if (ActionComp) {
-				ActionComp->AddAction(GetInstigator(),BurningActionClass);
+			if (ActionComp && BurningActionClass && HasAuthority())
+			{
+				ActionComp->AddAction(GetInstigator(), BurningActionClass);
 			}
 
 		}

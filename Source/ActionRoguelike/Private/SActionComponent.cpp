@@ -7,6 +7,8 @@
 #include "../ActionRoguelike.h"
 #include "Engine/ActorChannel.h"
 
+//DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_STANFORD);
+
 USActionComponent::USActionComponent()
 {
 
@@ -30,6 +32,23 @@ void USActionComponent::BeginPlay()
 }
 
 
+void USActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+
+	// Stop all
+	TArray<USAction*> ActionsCopy = Actions;
+	for (USAction* Action : ActionsCopy)
+	{
+		if (Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
+
+}
+
 void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -42,7 +61,7 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
 
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %S : IsRunning: %S"),*GetNameSafe(GetOwner()),*GetNameSafe(Action));
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s"),*GetNameSafe(GetOwner()),*GetNameSafe(Action));
 
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
@@ -52,6 +71,13 @@ void USActionComponent::AddAction(AActor* Instigator,TSubclassOf<USAction> Actio
 {
 	if (!ensure(ActionClass)) 
 	{
+		return;
+	}
+
+	// Skip for clients
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Client attempting to AddAction. [Class: %s]"), *GetNameSafe(ActionClass));
 		return;
 	}
 

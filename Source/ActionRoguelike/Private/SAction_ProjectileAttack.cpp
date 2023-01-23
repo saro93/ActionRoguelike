@@ -53,11 +53,6 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(InstigatorCharacter);
 
-		FCollisionObjectQueryParams ObjParams;
-		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
-
 		FVector TraceStart = InstigatorCharacter->GetPawnViewLocation();
 
 		//endpoint far in to the look at distance (not too far, still adjust somewhat towards crossair on a miss)
@@ -65,7 +60,7 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 
 		FHitResult Hit;
 		//returns true if we got to a blocking hit
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params)) {
+		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params)) {
 			//overwrite trace end with impact oint in the world
 			TraceEnd = Hit.ImpactPoint;
 		}

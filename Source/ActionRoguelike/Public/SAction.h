@@ -9,6 +9,7 @@
 
 
 class UWorld;
+class USActionComponent;
 /**
  * 
  */
