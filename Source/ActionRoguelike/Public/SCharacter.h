@@ -14,6 +14,10 @@ class UAnimMontage;
 class USAttributeComponent;
 class USActionComponent;
 
+/**
+ *
+ */
+
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {

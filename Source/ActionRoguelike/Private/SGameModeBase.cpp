@@ -8,6 +8,8 @@
 #include "AI/SAICharacter.h"
 #include "SPlayerState.h"
 #include "SAttributeComponent.h"
+//#include "S_SaveGame.h"
+#include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "SCharacter.h"
 
@@ -236,3 +238,23 @@ void ASGameModeBase::OnActorkilled(AActor* VictimActor, AActor* Killer)
 	}
 
 }
+/*
+void ASGameModeBase::WriteSaveGame()
+{
+
+}
+
+void ASGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName,0)) 
+	{
+		CurrentSaveGame = Cast<US_SaveGame> (UGameplayStatics::LoadGameFromSlot(SlotName,0 ));
+
+		if (CurrentSaveGame == nullptr) {
+			UE_LOG(LogTemp,Warning, TEXT("Failed to load SaveGame: Data. "));
+		}
+	}
+	else {
+		CurrentSaveGame =Cast<US_SaveGame> (UGameplayStatics::CreateSaveGameObject(US_SaveGame::StaticClass()));
+	}
+}*/

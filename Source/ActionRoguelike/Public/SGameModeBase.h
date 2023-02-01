@@ -10,10 +10,8 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+//class US_SaveGame;
 
-/**
- * 
- */
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 {
@@ -31,8 +29,18 @@ public:
 		void RespawnPlayerElapsed(AController* Controller);
 
 	virtual void OnActorkilled(AActor* VictimActor, AActor* Killer);
+/*
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+		void WriteSaveGame();
+
+	void LoadSaveGame();*/
 
 protected:
+
+	FString SlotName;
+
+	//UPROPERTY()
+		//US_SaveGame* CurrentSaveGame;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
