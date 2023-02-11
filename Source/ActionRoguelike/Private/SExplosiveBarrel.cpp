@@ -4,7 +4,6 @@
 #include "SExplosiveBarrel.h"
 #include "Components/SphereComponent.h"
 #include "SMagicProjectile.h"
-#include "SCharacter.generated.h"
 
 // class FString;
 // Sets default values
