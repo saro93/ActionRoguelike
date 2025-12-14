@@ -13,6 +13,8 @@ class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
 class USActionComponent;
+class UInputMappingContext;
+class UInputAction;
 
 /**
  *
@@ -29,6 +31,36 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Move;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_LookMouse;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_LookStick;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Jump;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Interact;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Sprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Dash;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_PrimaryAttavk;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_SecondaryAttack;
+		
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 		FName TimeToHitParamName;

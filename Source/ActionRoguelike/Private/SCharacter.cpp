@@ -11,6 +11,10 @@
 #include "SInteractionComponent.h"
 #include "SActionComponent.h"
 
+//EnhancedInput
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+
 // Sets default values
 ASCharacter::ASCharacter()
 {
