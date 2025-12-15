@@ -16,6 +16,8 @@ class USActionComponent;
 class UInputMappingContext;
 class UInputAction;
 
+struct FInputActionValue;
+
 /**
  *
  */
@@ -35,13 +37,10 @@ protected:
 	UInputMappingContext* DefaultMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* Input_Move;
+	UInputAction* Input_MoveForward;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* Input_LookMouse;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* Input_LookStick;
+	UInputAction* Input_MoveRight;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* Input_Jump;
@@ -56,7 +55,7 @@ protected:
 	UInputAction* Input_Dash;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* Input_PrimaryAttavk;
+	UInputAction* Input_PrimaryAttack;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* Input_SecondaryAttack;
@@ -83,9 +82,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void MoveForward(float Value);
+	void MoveForward(const FInputActionValue& Value);
 
-	void MoveRight(float Value);
+	void MoveRight(const FInputActionValue& Value);
 
 	void SprintStart();
 	void SprintStop();

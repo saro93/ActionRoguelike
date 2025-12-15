@@ -10,10 +10,12 @@
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "SActionComponent.h"
+#include "GameFramework/PlayerController.h"
 
 //EnhancedInput
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -60,23 +62,30 @@ void ASCharacter::BeginPlay()
 	
 }
 
-void ASCharacter::MoveForward(float Value)
+void ASCharacter::MoveForward(const FInputActionValue& Value)
 {
+
+	const float Axis = Value.Get<float>();
+	if (Axis == 0.f) return;
+
 	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.0f;
-	ControlRot.Roll = 0.0f;
-	AddMovementInput(ControlRot.Vector(), Value);
+	ControlRot.Pitch = 0.f;
+	ControlRot.Roll = 0.f;
+
+	AddMovementInput(ControlRot.Vector(), Axis);
 }
 
-void ASCharacter::MoveRight(float Value)
+void ASCharacter::MoveRight(const FInputActionValue& Value)
 {
+	const float Axis = Value.Get<float>();
+	if (Axis == 0.f) return;
+
 	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.0f;
-	ControlRot.Roll = 0.0f;
+	ControlRot.Pitch = 0.f;
+	ControlRot.Roll = 0.f;
 
-	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
-
-	AddMovementInput(RightVector, Value);
+	FVector RightVector = FRotationMatrix(ControlRot).GetUnitAxis(EAxis::Y);
+	AddMovementInput(RightVector, Axis);
 }
 
 void ASCharacter::SprintStart()
@@ -179,11 +188,43 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	ULocalPlayer* LP = PC ? PC->GetLocalPlayer() : nullptr;
+
+	if (LP) {
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	    if (Subsystem)
+		{
+			Subsystem->ClearAllMappings();
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+
+	//Enhanced Input	
+
+	UEnhancedInputComponent* InputComp = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
+	if (InputComp) {
+		InputComp->BindAction(Input_MoveForward, ETriggerEvent::Triggered, this, &ASCharacter::MoveForward);
+		InputComp->BindAction(Input_MoveRight, ETriggerEvent::Triggered, this, &ASCharacter::MoveRight);
+		InputComp->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ASCharacter::Jump);
+		InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
+
+		InputComp->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::BlackHoleAttack);
+		InputComp->BindAction(Input_Dash, ETriggerEvent::Triggered, this, &ASCharacter::Dash);
+		InputComp->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryInteract);
+		InputComp->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ASCharacter::SprintStart);
+		InputComp->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ASCharacter::SprintStop);
+
+		PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+		PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	}
+
+	/*
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
 	
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed,this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
@@ -193,6 +234,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
+	*/
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
