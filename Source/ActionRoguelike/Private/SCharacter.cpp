@@ -148,12 +148,13 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	if (NewHealth <= 0.0f && Delta < 0.0f) {
 		APlayerController* PC =  Cast<APlayerController>(GetController());
 		DisableInput(PC);
-
+		InteractionComp->ClearInteractUI();
 		SetLifeSpan(5.f);
 	}
 	if (Delta < 0.0f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		InteractionComp->ClearInteractUI();
 	}
 }
 

@@ -8,10 +8,13 @@
 #include "AI/SAICharacter.h"
 #include "SPlayerState.h"
 #include "SAttributeComponent.h"
-//#include "S_SaveGame.h"
+#include "SSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "SCharacter.h"
+#include "GameFramework/GameStateBase.h"
+#include <SGameplayInterface.h>
+#include <Serialization/ObjectAndNameAsStringProxyArchive.h>
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawing of bots via timer"), ECVF_Cheat);
@@ -27,6 +30,7 @@ ASGameModeBase::ASGameModeBase()
 	RequiredPowerupDistance = 2000;
 
 	PlayerStateClass = ASPlayerState::StaticClass();
+	SlotName = "SaveGame01";
 }
 
 void ASGameModeBase::StartPlay()
@@ -238,23 +242,121 @@ void ASGameModeBase::OnActorkilled(AActor* VictimActor, AActor* Killer)
 	}
 
 }
-/*
+
 void ASGameModeBase::WriteSaveGame()
 {
+	// Iterate all Player states, we dont have proper ID to match yet (requires steam or EOS)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
 
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break;
+		}
+
+	}
+
+	CurrentSaveGame->SavedActors.Empty();
+
+	// Iterate the entire world of actors
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		// Only interested in gameplay actors
+		if (!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetActorTransform();
+
+		//Pass the array to free data with actors
+		FMemoryWriter MemWriter (ActorData.ByteData);
+
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter,true);
+		// Find UPROPERTY() with SaveGame Signature
+		Ar.ArIsSaveGame = true;
+
+		// Converts UPROPERTY Actors in Bynary Data
+		Actor->Serialize(Ar);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
 
 void ASGameModeBase::LoadSaveGame()
 {
 	if (UGameplayStatics::DoesSaveGameExist(SlotName,0)) 
 	{
-		CurrentSaveGame = Cast<US_SaveGame> (UGameplayStatics::LoadGameFromSlot(SlotName,0 ));
+		CurrentSaveGame = Cast<USSaveGame> (UGameplayStatics::LoadGameFromSlot(SlotName,0 ));
 
 		if (CurrentSaveGame == nullptr) {
 			UE_LOG(LogTemp,Warning, TEXT("Failed to load SaveGame: Data. "));
+			return;
 		}
+
+		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame: Data. "));
+
+
+		// Iterate the entire world of actors
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			// Only interested in gameplay actors
+			if (!Actor->Implements<USGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					//Pass the array to free data with actors
+					FMemoryReader MemReader(ActorData.ByteData);
+
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					// Find UPROPERTY() with SaveGame Signature
+					Ar.ArIsSaveGame = true;
+
+					// Converts Bynary Data Back into UPRPERTY() With SaveGme Signature 
+					Actor->Serialize(Ar);
+
+					ISGameplayInterface::Execute_OnActorLoaded(Actor);
+
+					break;
+				}
+			}
+		}
+
 	}
 	else {
-		CurrentSaveGame =Cast<US_SaveGame> (UGameplayStatics::CreateSaveGameObject(US_SaveGame::StaticClass()));
+		CurrentSaveGame =Cast<USSaveGame> (UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
+		UE_LOG(LogTemp, Log, TEXT("Created New SaveGame: Data. "));
 	}
-}*/
+}
+
+void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	LoadSaveGame();
+}
+
+void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+	}
+}

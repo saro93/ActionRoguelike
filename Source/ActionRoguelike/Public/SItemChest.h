@@ -22,11 +22,11 @@ public:
 
 	void Interact_Implementation(APawn* InstigatorPawn);
 
-
+	void OnActorLoaded_Implementation();
 protected:
 
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, ReplicatedUsing="OnRep_LidOpened", BlueprintReadWrite, SaveGame)
 		bool bLidOpen;
 
 	UFUNCTION()

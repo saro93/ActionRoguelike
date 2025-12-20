@@ -37,6 +37,24 @@ void USInteractionComponent::BeginPlay()
 
 
 
+void USInteractionComponent::ClearInteractUI()
+{
+	FocusedActor = nullptr;
+
+	if (DefaultWidgetInstance)
+	{
+		DefaultWidgetInstance->RemoveFromParent();
+		DefaultWidgetInstance->AttachedActor = nullptr;
+		DefaultWidgetInstance = nullptr;
+	}
+}
+
+void USInteractionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	ClearInteractUI();
+	Super::EndPlay(EndPlayReason);
+}
+
 // Called every frame
 void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -118,7 +136,7 @@ void USInteractionComponent::FindBestInteractable()
 	}
 	else {
 		if (DefaultWidgetInstance) {
-			DefaultWidgetInstance->RemoveFromParent();
+			ClearInteractUI();
 		}
 	}
 

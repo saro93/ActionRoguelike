@@ -23,7 +23,12 @@ ASItemChest::ASItemChest()
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	bLidOpen = !bLidOpen;
+	//bLidOpen = !bLidOpen;
+	OnRep_LidOpened();
+}
+
+void ASItemChest::OnActorLoaded_Implementation()
+{
 	OnRep_LidOpened();
 }
 
