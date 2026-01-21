@@ -88,6 +88,13 @@ void ASCharacter::MoveRight(const FInputActionValue& Value)
 	AddMovementInput(RightVector, Axis);
 }
 
+void ASCharacter::Look(const FInputActionValue& Value)
+{
+	const FVector2D Axis = Value.Get<FVector2D>();
+	AddControllerYawInput(Axis.X);
+	AddControllerPitchInput(-Axis.Y);
+}
+
 void ASCharacter::SprintStart()
 {
 	ActionComp->StartActionByName(this, "Sprint");
@@ -165,8 +172,12 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+
+	/*UE_LOG(LogTemp, Warning, TEXT("Velocity Z: %f | Mode: %d"),
+		GetCharacterMovement()->Velocity.Z,
+		(int)GetCharacterMovement()->MovementMode);
 	// -- Rotation Visualization debug -- //
-	/*const float DrawScale = 100.0f;
+	const float DrawScale = 100.0f;
 	const float Thickness = 5.0f;
 
 	FVector LineStart = GetActorLocation();
@@ -180,8 +191,8 @@ void ASCharacter::Tick(float DeltaTime)
 	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
 	// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
 	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
-	// -- end of Debug Arrow code -- //*/
-
+	// -- end of Debug Arrow code -- //
+	*/
 }
 
 // Called to bind functionality to input
@@ -206,36 +217,20 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	UEnhancedInputComponent* InputComp = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
 	if (InputComp) {
+
 		InputComp->BindAction(Input_MoveForward, ETriggerEvent::Triggered, this, &ASCharacter::MoveForward);
 		InputComp->BindAction(Input_MoveRight, ETriggerEvent::Triggered, this, &ASCharacter::MoveRight);
+		InputComp->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ASCharacter::Look);
 		InputComp->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ASCharacter::Jump);
-		InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
+		
+		InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Started, this, &ASCharacter::PrimaryAttack);
+		InputComp->BindAction(Input_SecondaryAttack, ETriggerEvent::Started, this, &ASCharacter::BlackHoleAttack);
+		InputComp->BindAction(Input_Dash, ETriggerEvent::Started, this, &ASCharacter::Dash);
+		InputComp->BindAction(Input_Interact, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
 
-		InputComp->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::BlackHoleAttack);
-		InputComp->BindAction(Input_Dash, ETriggerEvent::Triggered, this, &ASCharacter::Dash);
-		InputComp->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryInteract);
 		InputComp->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ASCharacter::SprintStart);
 		InputComp->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ASCharacter::SprintStop);
-
-		PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-		PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	}
-
-	/*
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
-	
-
-
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed,this, &ASCharacter::PrimaryAttack);
-	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed,this, &ASCharacter::Jump);
-	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
-	PlayerInputComponent->BindAction("DashAction", IE_Pressed, this, &ASCharacter::Dash);
-
-	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
-	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
-	*/
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

@@ -43,6 +43,9 @@ protected:
 	UInputAction* Input_MoveRight;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Look;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* Input_Jump;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -85,6 +88,8 @@ protected:
 	void MoveForward(const FInputActionValue& Value);
 
 	void MoveRight(const FInputActionValue& Value);
+
+	void Look(const FInputActionValue& Value);
 
 	void SprintStart();
 	void SprintStop();

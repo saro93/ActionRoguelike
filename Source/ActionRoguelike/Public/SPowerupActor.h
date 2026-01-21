@@ -9,7 +9,7 @@
 
 
 class USphereComponent;
-
+class UStaticMeshComponent;
 
 UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API ASPowerupActor : public AActor, public ISGameplayInterface
@@ -18,6 +18,11 @@ class ACTIONROGUELIKE_API ASPowerupActor : public AActor, public ISGameplayInter
 
 protected:
 
+	UPROPERTY(ReplicatedUsing ="OnRep_IsActive")
+	bool bIsActive;
+
+	UFUNCTION()
+	void OnRep_IsActive();
 
 	UPROPERTY(EditAnywhere, Category = "Powerup")
 		float RespawnTime;
@@ -33,6 +38,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		USphereComponent* SphereComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	    UMeshComponent* MeshComp;
 
 public:
 

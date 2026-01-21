@@ -20,8 +20,8 @@ class ACTIONROGUELIKE_API ASPowerup_HealthPotion : public ASPowerupActor
 
 protected:
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* MeshComp;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* MeshComp;
 
 	int32 CreditCost;
 

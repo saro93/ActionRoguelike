@@ -53,6 +53,11 @@ void ASPlayerState::LoadPlayerState(USSaveGame* SaveObject)
 	}
 }
 
+void ASPlayerState::OnRep_Credits(int32 OldCredits)
+{
+	OnCreditsChanged.Broadcast(this, Credits, Credits - OldCredits);
+}
+
 int32 ASPlayerState::GetCredits() const
 {
 	return Credits;

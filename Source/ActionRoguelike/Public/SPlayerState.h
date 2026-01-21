@@ -22,6 +22,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Credits")
 		int32 Credits;
 
+    UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
+
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Credits")

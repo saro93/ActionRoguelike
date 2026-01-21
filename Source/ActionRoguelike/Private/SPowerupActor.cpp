@@ -30,13 +30,24 @@ void ASPowerupActor::ShowPowerup()
 {
 	SetPowerupState(true);
 }
-
+void ASPowerupActor::OnRep_IsActive()
+{
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive,true);
+}
 
 void ASPowerupActor::HideAndCooldownPowerup()
 {
 	SetPowerupState(false);
 
 	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPowerupActor::ShowPowerup, RespawnTime);
+}
+
+void ASPowerupActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPowerupActor, bIsActive);
 }
 
 void ASPowerupActor::SetPowerupState(bool bNewIsActive)
