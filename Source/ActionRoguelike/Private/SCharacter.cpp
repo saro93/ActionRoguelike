@@ -175,8 +175,8 @@ void ASCharacter::Tick(float DeltaTime)
 
 	/*UE_LOG(LogTemp, Warning, TEXT("Velocity Z: %f | Mode: %d"),
 		GetCharacterMovement()->Velocity.Z,
-		(int)GetCharacterMovement()->MovementMode);
-	// -- Rotation Visualization debug -- //
+		(int)GetCharacterMovement()->MovementMode);*/
+	/* -- Rotation Visualization debug -- //
 	const float DrawScale = 100.0f;
 	const float Thickness = 5.0f;
 
@@ -221,7 +221,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		InputComp->BindAction(Input_MoveForward, ETriggerEvent::Triggered, this, &ASCharacter::MoveForward);
 		InputComp->BindAction(Input_MoveRight, ETriggerEvent::Triggered, this, &ASCharacter::MoveRight);
 		InputComp->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ASCharacter::Look);
-		InputComp->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ASCharacter::Jump);
+		InputComp->BindAction(Input_Jump, ETriggerEvent::Started, this, &ASCharacter::Jump);
 		
 		InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Started, this, &ASCharacter::PrimaryAttack);
 		InputComp->BindAction(Input_SecondaryAttack, ETriggerEvent::Started, this, &ASCharacter::BlackHoleAttack);

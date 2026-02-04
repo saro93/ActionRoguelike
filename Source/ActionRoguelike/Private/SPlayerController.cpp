@@ -43,9 +43,8 @@ void ASPlayerController::SetPawn(APawn* InPawn)
 
 void ASPlayerController::BeginPlayingState()
 {
-	Super::BeginPlayingState();
+	BlueprintBeginPlayingState();
 }
-
 
 void ASPlayerController::OnRep_PlayerState()
 {

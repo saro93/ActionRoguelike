@@ -22,7 +22,7 @@ static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT
 
 ASGameModeBase::ASGameModeBase()
 {
-	SpawnTimerInterval = 2.0f;
+	SpawnTimerInterval = 2;
 	CreditsPerKill = 20;
 	CooldownTimeBetweenFailures = 8.0f;
 

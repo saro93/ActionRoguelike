@@ -55,7 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 		TArray<TSubclassOf<USAction>> DefaultActions;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated,BlueprintReadOnly)
 		TArray<USAction*> Actions;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
