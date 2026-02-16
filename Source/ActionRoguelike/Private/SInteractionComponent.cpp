@@ -135,8 +135,9 @@ void USInteractionComponent::FindBestInteractable()
 
 	}
 	else {
-		if (DefaultWidgetInstance) {
-			ClearInteractUI();
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->RemoveFromParent();
 		}
 	}
 
