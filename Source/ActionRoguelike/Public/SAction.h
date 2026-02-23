@@ -34,14 +34,13 @@ class ACTIONROGUELIKE_API USAction : public UObject
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		UTexture2D* Icon;
+		TSoftObjectPtr<UTexture2D> Icon;
 
 	UPROPERTY(Replicated)
 	USActionComponent* ActionComp;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		USActionComponent* GetOwningComponent() const;
-
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 		FGameplayTagContainer GrantsTags;

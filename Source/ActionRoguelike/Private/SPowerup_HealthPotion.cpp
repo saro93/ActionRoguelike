@@ -47,7 +47,7 @@ FText ASPowerup_HealthPotion::GetInteractText_Implementation(APawn* InstigatorPa
 	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttribute(InstigatorPawn);
 	if(AttributeComp && AttributeComp->IsFullHealth())
 	{
-		return FText::Format(LOCTEXT("HealthPotion_FullHealthWarning", "Already at full health"));
+		return LOCTEXT("HealthPotion_FullHealthWarning", "Already at full health.");
 	}
 
 	return FText::Format(LOCTEXT("HealthPotion_InteractMessage", "Cost {0} Credits. Restore health to maximum"),CreditCost);
